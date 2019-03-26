@@ -1,0 +1,97 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.sohu.chromium.net"
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters("armeabi-v7a")
+        }
+//        ndk {
+//            moduleName "neteasenet"
+
+//            CFlags.addAll(['-I' + file('src/main/jni/include/'),])
+//
+//            cppFlags.addAll(['-I' + file('src/main/jni/include'),])
+
+//            ldLibs.add("android")
+//            ldLibs.add("log")
+//            ldLibs.add("z")
+//        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ["src/main/jniLibs"]
+//            jniLibs {
+//                source {
+//                    srcDirs =["src/main/jniLibs"]
+//                }
+//            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+//    externalNativeBuild {
+//        ndkBuild {
+//            path "src/main/jni/Android.mk"
+//        }
+//    }
+//    sources {
+//        main {
+//            java {
+//                source {
+//                    srcDir "src/main/java"
+//                }
+//            }
+//            jni {
+//                source {
+//                    srcDirs = ["src/main/jni",]
+//                }
+//                dependencies {
+//                    library 'chromium_net' linkage 'shared'
+//                }
+//            }
+//            jniLibs {
+//                source {
+//                    srcDirs =["src/main/jni/libs",]
+//                }
+//            }
+//        }
+//    }
+}
+
+//repositories {
+//    libs(PrebuiltLibraries) {
+//        chromium_net {
+//            headers.srcDir "src/main/jni/include"
+//            binaries.withType(SharedLibraryBinary) {
+//                sharedLibraryFile = file("src/main/jni/libs/${targetPlatform.getName()}/libnet.cr.so")
+//            }
+//        }
+//    }
+//}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}

@@ -1,0 +1,17 @@
+{
+  "buildFiles": [
+    "/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Android.mk",
+    "/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Application.mk"
+  ],
+  "cleanCommands": [
+    "/Users/wangyan/Public/android-ndk-r16b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Application.mk APP_ABI\u003dx86 NDK_ALL_ABIS\u003dx86 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/lib clean"
+  ],
+  "libraries": {
+    "native-debug-x86": {
+      "artifactName": "native",
+      "buildCommand": "/Users/wangyan/Public/android-ndk-r16b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Application.mk APP_ABI\u003dx86 NDK_ALL_ABIS\u003dx86 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/lib /Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/obj/local/x86/libnative.so",
+      "abi": "x86",
+      "output": "/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/obj/local/x86/libnative.so"
+    }
+  }
+}

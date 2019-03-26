@@ -1,0 +1,33 @@
+{
+  "buildFiles": [
+    "/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Android.mk",
+    "/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Application.mk"
+  ],
+  "cleanCommands": [
+    "/Users/wangyan/Public/android-ndk-r16b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Application.mk APP_ABI\u003dx86 NDK_ALL_ABIS\u003dx86 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/lib clean"
+  ],
+  "libraries": {
+    "native-debug-x86": {
+      "buildCommand": "/Users/wangyan/Public/android-ndk-r16b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/Application.mk APP_ABI\u003dx86 NDK_ALL_ABIS\u003dx86 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/lib /Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/obj/local/x86/libnative.so",
+      "toolchain": "toolchain-x86",
+      "abi": "x86",
+      "artifactName": "native",
+      "files": [
+        {
+          "src": "/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/src/NetJni.cpp",
+          "flags": "-gcc-toolchain /Users/wangyan/Public/android-ndk-r16b/toolchains/x86-4.9/prebuilt/darwin-x86_64 -target i686-none-linux-android -ffunction-sections -funwind-tables -fstack-protector-strong -fPIC -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes -g -fno-exceptions -fno-rtti -O0 -UNDEBUG -fno-limit-debug-info -I/Users/wangyan/code/sohu-project/chromium/app/src/main/jni/include -I/Users/wangyan/Public/android-ndk-r16b/sources/cxx-stl/llvm-libc++/include -I/Users/wangyan/Public/android-ndk-r16b/sources/cxx-stl/llvm-libc++/../llvm-libc++abi/include -I/Users/wangyan/Public/android-ndk-r16b/sources/android/support/include -I/Users/wangyan/code/sohu-project/chromium/app/src/main/jni -std\u003dc++11 -DANDROID -D__ANDROID_API__\u003d14 -Wa,--noexecstack -Wformat -Werror\u003dformat-security -mstackrealign --sysroot /Users/wangyan/Public/android-ndk-r16b/sysroot -isystem /Users/wangyan/Public/android-ndk-r16b/sysroot/usr/include/i686-linux-android"
+        }
+      ],
+      "output": "/Users/wangyan/code/sohu-project/chromium/app/build/intermediates/ndkBuild/debug/obj/local/x86/libnative.so"
+    }
+  },
+  "toolchains": {
+    "toolchain-x86": {
+      "cppCompilerExecutable": "/Users/wangyan/Public/android-ndk-r16b/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

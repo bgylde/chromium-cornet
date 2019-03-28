@@ -2,6 +2,7 @@ package com.sohu.chromium.net.cornet;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.SystemClock;
 
 import com.sohu.chromium.net.utils.LogUtils;
 
@@ -9,6 +10,11 @@ import org.chromium.net.CronetEngine;
 import org.chromium.net.UploadDataProviders;
 import org.chromium.net.UrlRequest;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -49,7 +55,7 @@ public class CronetHelper {
                 .enableQuic(true);   // Quic Supprot
         cronetEngine = builder.build();
         LogUtils.d(TAG, NET_LOG_PATH);
-        cronetEngine.startNetLogToFile(NET_LOG_PATH, false);
+//        cronetEngine.startNetLogToFile(NET_LOG_PATH, false);
         LogUtils.d(TAG, "version: " + cronetEngine.getVersionString());
     }
 
@@ -67,7 +73,6 @@ public class CronetHelper {
 //        }
     }
 
-
     private void startWithURL(String url, UrlRequest.Callback callback) {
         startWithURL(url, callback, null);
     }
@@ -83,6 +88,47 @@ public class CronetHelper {
             builder.setHttpMethod("POST");
             builder.addHeader("Content-Type", "application/x-www-form-urlencoded");
             builder.setUploadDataProvider(UploadDataProviders.create(postData.getBytes()), executor);
+        }
+    }
+
+    public void downloadFile(String url, int connectTime, int readTime) {
+        if (url == null || url.trim().length() <= 0) {
+            return;
+        }
+
+        InputStream inputStream = null;
+        try {
+            URL httpUrl = new URL(url);
+            URLConnection httpConnection = cronetEngine.openConnection(httpUrl);
+            httpConnection.setConnectTimeout(connectTime);
+            httpConnection.setReadTimeout(readTime);
+            httpConnection.setUseCaches(false);
+
+            long startTime = SystemClock.elapsedRealtime();
+            httpConnection.connect();
+            long durationTime = SystemClock.elapsedRealtime() - startTime;
+            LogUtils.d(TAG, "durationTime: " + durationTime);
+
+            inputStream = httpConnection.getInputStream();
+            int rc = 0;
+            byte[] buff = new byte[1024];
+            long startReadTime = SystemClock.elapsedRealtime();
+            ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+            while ((rc = inputStream.read(buff, 0, 1024)) > 0) {
+                swapStream.write(buff, 0, rc);
+                if ((SystemClock.elapsedRealtime() - startReadTime) > readTime) {
+                    break;
+                }
+            }
+
+            byte[] in2b = swapStream.toByteArray();
+            swapStream.close();
+            inputStream.close();
+            long costTime = (SystemClock.elapsedRealtime() - startReadTime);
+            long speed = (in2b.length >> 10) * 1000 / costTime;
+            LogUtils.d(TAG, "length: " + in2b.length + " time: " + costTime + " speed: " + speed);
+        } catch (IOException e) {
+            LogUtils.e(TAG, e);
         }
     }
 }

@@ -76,8 +76,8 @@ public class UrlRequestCallback extends UrlRequest.Callback {
 
         final String url = info.getUrl();
         final String text = "Completed " + url + " (" + info.getHttpStatusCode() + ")";
-        //LogUtils.i(TAG, "text: " + text);
-        //LogUtils.i(TAG, "receivedData: " + receivedData);
+        LogUtils.i(TAG, "text: " + text);
+        LogUtils.i(TAG, "receivedData: " + receivedData);
     }
 
     @Override

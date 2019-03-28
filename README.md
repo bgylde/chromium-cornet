@@ -1,5 +1,3 @@
-# chromium-cronet
-The demo of cornet library compiled by myself.
 # chromium-cronet库的编译用于Android和ios平台实现quic协议
 
 > [chromium-cronet文档](https://chromium.googlesource.com/chromium/src/+/master/components/cronet/build_instructions.md) 原文文档写的已经很清楚，最好还是参考官方文档，避免由于版本原因导致的问题。

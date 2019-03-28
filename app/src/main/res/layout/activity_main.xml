@@ -9,6 +9,15 @@
         android:id="@+id/request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Request" />
+
+    <Button
+        android:id="@+id/download"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/request"
+        android:layout_marginTop="20dp"
+        android:text="download"/>
 
 </RelativeLayout>

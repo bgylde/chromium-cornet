@@ -3,21 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FF000000">
 
     <Button
         android:id="@+id/request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Request" />
+        android:text="HTTP_DOWNLOAD" />
+
+    <LinearLayout
+        android:id="@+id/requestContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/request"
+        android:orientation="vertical">
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/download"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/request"
-        android:layout_marginTop="20dp"
-        android:text="download"/>
+        android:layout_below="@id/requestContainer"
+        android:text="QUIC_DOWNLOAD"/>
 
+    <LinearLayout
+        android:id="@+id/quicContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/download"
+        android:orientation="vertical">
+
+    </LinearLayout>
 </RelativeLayout>

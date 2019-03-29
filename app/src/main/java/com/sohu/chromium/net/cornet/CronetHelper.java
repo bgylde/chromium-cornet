@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.os.SystemClock;
 
+import com.sohu.chromium.net.utils.Config;
 import com.sohu.chromium.net.utils.LogUtils;
 
 import org.chromium.net.CronetEngine;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -91,7 +93,13 @@ public class CronetHelper {
         }
     }
 
-    public void downloadFile(String url, int connectTime, int readTime) {
+    public void downloadCallback(String url) {
+        UrlRequest.Callback downloadCallback = new DownloadRequestCallback();
+        UrlRequest.Builder builder = cronetEngine.newUrlRequestBuilder(url, downloadCallback, executor);
+        builder.build().start();
+    }
+
+    public void downloadFile(String url, ProgressCallback callback) {
         if (url == null || url.trim().length() <= 0) {
             return;
         }
@@ -100,24 +108,30 @@ public class CronetHelper {
         try {
             URL httpUrl = new URL(url);
             URLConnection httpConnection = cronetEngine.openConnection(httpUrl);
-            httpConnection.setConnectTimeout(connectTime);
-            httpConnection.setReadTimeout(readTime);
+            httpConnection.setConnectTimeout(10000);
+            httpConnection.setReadTimeout(10000);
             httpConnection.setUseCaches(false);
 
             long startTime = SystemClock.elapsedRealtime();
             httpConnection.connect();
             long durationTime = SystemClock.elapsedRealtime() - startTime;
             LogUtils.d(TAG, "durationTime: " + durationTime);
-
+            long lengthLong = httpConnection.getContentLength();
+            LogUtils.d(TAG, "length: " + lengthLong);
             inputStream = httpConnection.getInputStream();
             int rc = 0;
-            byte[] buff = new byte[1024];
+            long currentBytes = 0;
+            DecimalFormat df = new DecimalFormat("#####0.00");
+            byte[] buff = new byte[102400];
             long startReadTime = SystemClock.elapsedRealtime();
             ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
-            while ((rc = inputStream.read(buff, 0, 1024)) > 0) {
+            while ((rc = inputStream.read(buff, 0, 102400)) > 0) {
                 swapStream.write(buff, 0, rc);
-                if ((SystemClock.elapsedRealtime() - startReadTime) > readTime) {
-                    break;
+                currentBytes += rc;
+                double result = (double)currentBytes * 100 / (double)lengthLong;
+                LogUtils.d(TAG, "downloading---" + df.format(result) + "%");
+                if (callback != null) {
+                    callback.progress((int)result);
                 }
             }
 
@@ -126,7 +140,12 @@ public class CronetHelper {
             inputStream.close();
             long costTime = (SystemClock.elapsedRealtime() - startReadTime);
             long speed = (in2b.length >> 10) * 1000 / costTime;
-            LogUtils.d(TAG, "length: " + in2b.length + " time: " + costTime + " speed: " + speed);
+            if (callback != null) {
+                callback.complete(Config.formatUnion(in2b.length), Config.formatTime((int)costTime), Config.formatString("%sKB/S", speed));
+            }
+
+            String result = "length: " + Config.formatUnion(in2b.length) + " time: " + Config.formatTime((int)costTime) + " speed: " + speed + " KB/S";
+            LogUtils.d(TAG, result);
         } catch (IOException e) {
             LogUtils.e(TAG, e);
         }

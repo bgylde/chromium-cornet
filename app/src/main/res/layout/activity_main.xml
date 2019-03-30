@@ -1,48 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF000000">
-    <LinearLayout
+    android:weightSum="3"
+    android:orientation="vertical">
+
+    <RadioGroup
+        android:id="@+id/protocolGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/request"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="HTTP_DOWNLOAD" />
-        <LinearLayout
-            android:id="@+id/requestContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </LinearLayout>
+        android:weightSum="4"
+        android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/http2_download"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="HTTP2_DOWNLOAD"/>
-        <LinearLayout
-            android:id="@+id/http2Container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </LinearLayout>
+            android:layout_weight="1"
+            android:text="PROTOCOL:"/>
 
-        <Button
-            android:id="@+id/download"
-            android:layout_width="match_parent"
+        <RadioButton
+            android:id="@+id/http"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="QUIC_DOWNLOAD"/>
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="http"/>
+
+        <RadioButton
+            android:id="@+id/http2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="http2"/>
+
+        <RadioButton
+            android:id="@+id/quic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="quic"/>
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/requestStyleGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="4"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="REQUEST:"/>
+
+        <RadioButton
+            android:id="@+id/urlconnection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="system"/>
+
+        <RadioButton
+            android:id="@+id/okhttp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="okhttp"/>
+
+        <RadioButton
+            android:id="@+id/quicUrlConnection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="quic"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/startTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="startTest"
+        android:text="startTest"/>
+
+    <Button
+        android:id="@+id/clearResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="startTest"
+        android:text="clearResult"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
         <LinearLayout
-            android:id="@+id/quicContainer"
+            android:id="@+id/testContaioner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#FF000000"
             android:orientation="vertical">
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

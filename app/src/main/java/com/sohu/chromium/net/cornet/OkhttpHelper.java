@@ -5,10 +5,11 @@ import android.os.SystemClock;
 import com.sohu.chromium.net.utils.Config;
 import com.sohu.chromium.net.utils.LogUtils;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -22,11 +23,17 @@ public class OkhttpHelper implements IDownloadTest{
 
     private static final String TAG = "OkhttpHelper";
     private static OkhttpHelper helper = null;
+    private static int timeout = 600;
 
     private OkHttpClient client = null;
 
     private OkhttpHelper() {
-        client = new OkHttpClient();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        client = builder.writeTimeout(timeout, TimeUnit.SECONDS)
+                .callTimeout(timeout, TimeUnit.SECONDS)
+                .connectTimeout(timeout, TimeUnit.SECONDS)
+                .readTimeout(timeout, TimeUnit.SECONDS)
+                .build();
     }
 
     public static OkhttpHelper getHelper() {
@@ -43,7 +50,7 @@ public class OkhttpHelper implements IDownloadTest{
 
     @Override
     public void downloadTest(String url, ProgressCallback callback) {
-        Request request = new Request.Builder().url(url).build();
+        Request request = new Request.Builder().cacheControl(CacheControl.FORCE_NETWORK).url(url).build();
 
         Call call = client.newCall(request);
         Response response = null;
@@ -64,7 +71,8 @@ public class OkhttpHelper implements IDownloadTest{
                 inputStream = body.byteStream();
                 while((len = inputStream.read(buf)) != -1) {
                     currentLen += len;
-                    callback.progress((int)(currentLen / totalLength));
+                    double result = (double)currentLen * 100 / (double)totalLength;
+                    callback.progress((int)(result));
                 }
             }
 

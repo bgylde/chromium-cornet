@@ -2,17 +2,16 @@ package com.sohu.chromium.net.cornet;
 
 import android.os.SystemClock;
 
+import com.sohu.chromium.net.utils.Config;
 import com.sohu.chromium.net.utils.LogUtils;
 
 import org.chromium.net.CronetException;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.UrlResponseInfo;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangyan on 2019/3/28
@@ -21,12 +20,15 @@ public class DownloadRequestCallback extends UrlRequest.Callback {
     private static final String TAG = "DownloadRequestCallback";
 
     private long startTime = 0;
-    private ByteBuffer mByteBuffer = ByteBuffer.allocateDirect(102400);
-    private ByteArrayOutputStream mBytesReceived = new ByteArrayOutputStream();
-    private WritableByteChannel mReceiveChannel = Channels.newChannel(mBytesReceived);
+    private long totalLength = 0;
+    private ProgressCallback callback;
+    //private ByteBuffer mByteBuffer = ByteBuffer.allocateDirect(102400);
+//    private ByteArrayOutputStream mBytesReceived = new ByteArrayOutputStream();
+//    private WritableByteChannel mReceiveChannel = Channels.newChannel(mBytesReceived);
 
-    public DownloadRequestCallback() {
+    public DownloadRequestCallback(ProgressCallback callback) {
         startTime = SystemClock.elapsedRealtime();
+        this.callback = callback;
     }
 
     @Override
@@ -38,33 +40,43 @@ public class DownloadRequestCallback extends UrlRequest.Callback {
     @Override
     public void onResponseStarted(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo) throws Exception {
         LogUtils.d(TAG, "onResponseStarted connect cost time: " + (SystemClock.elapsedRealtime() - startTime));
-        urlRequest.read(mByteBuffer);
+        String contentLengthStr = "";
+        List<Map.Entry<String, String>> headers = urlResponseInfo.getAllHeadersAsList();
+        for (Map.Entry<String, String> header : headers) {
+            if (header.getKey().toLowerCase().equals("content-length")) {
+                contentLengthStr = header.getValue();
+            }
+        }
+
+        totalLength = Long.parseLong(contentLengthStr);
+        urlRequest.read(ByteBuffer.allocateDirect(102400));
     }
 
     @Override
     public void onReadCompleted(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo, ByteBuffer byteBuffer) throws Exception {
-        try {
-            byteBuffer.flip();
-            mReceiveChannel.write(byteBuffer);
-            byteBuffer.clear();
-        } catch (IOException e) {
-            LogUtils.e(TAG, e);
-        }
+//        try {
+//            byteBuffer.flip();
+//            mReceiveChannel.write(byteBuffer);
+//            byteBuffer.clear();
+//        } catch (IOException e) {
+//            LogUtils.e(TAG, e);
+//        }
+        //mByteBuffer.clear();
+        double progress = ((double)urlResponseInfo.getReceivedByteCount() * 100) / totalLength;
+        callback.progress((int)progress);
 
-        urlRequest.read(mByteBuffer);
-
-        if (SystemClock.elapsedRealtime() - startTime > 10000) {
-            urlRequest.cancel();
-        }
+        urlRequest.read(ByteBuffer.allocateDirect(102400));
     }
 
     @Override
     public void onSucceeded(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo) {
         long costTime = SystemClock.elapsedRealtime() - startTime;
-        byte[] bytes = mBytesReceived.toByteArray();
-        long length = bytes.length;
+        //byte[] bytes = mBytesReceived.toByteArray();
+        long length = urlResponseInfo.getReceivedByteCount();
         long speed = ((length * 1000) >> 10) / (costTime);
         LogUtils.d(TAG, "onSucceeded length=" + length + "byte costTime=" + costTime + "ms speed: " + speed + "kb/s");
+
+        callback.complete(Config.formatUnion(urlResponseInfo.getReceivedByteCount()), Config.formatTime((int)costTime), speed + "KB/S");
     }
 
     @Override
@@ -75,8 +87,8 @@ public class DownloadRequestCallback extends UrlRequest.Callback {
     @Override
     public void onCanceled(UrlRequest request, UrlResponseInfo info) {
         long costTime = SystemClock.elapsedRealtime() - startTime;
-        byte[] bytes = mBytesReceived.toByteArray();
-        long length = bytes.length;
+//        byte[] bytes = mBytesReceived.toByteArray();
+        long length = info.getReceivedByteCount();
         long speed = ((length * 1000) >> 10) / (costTime);
         LogUtils.d(TAG, "onCanceled length=" + length + "byte costTime=" + costTime + "ms speed: " + speed + "kb/s");
     }

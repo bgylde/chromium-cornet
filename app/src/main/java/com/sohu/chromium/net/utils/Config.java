@@ -33,6 +33,19 @@ public class Config {
             "http://www.bgylde.com/m3u8/s0029flk3iu_p212_mp4_av.1.9.ts"
     };
 
+    public static String[] http2TestUrls = {
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.0.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.1.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.2.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.3.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.4.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.5.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.6.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.7.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.8.ts",
+            "https://www.bgylde.com:8080/m3u8/s0029flk3iu_p212_mp4_av.1.9.ts"
+    };
+
     public static String formatUnion(long length) {
         String result = "";
         byte index = 0;

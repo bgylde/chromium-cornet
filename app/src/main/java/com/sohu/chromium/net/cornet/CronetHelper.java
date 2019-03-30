@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by wangyan on 2019/3/26
  */
-public class CronetHelper {
+public class CronetHelper implements IDownloadTest{
 
     private static final String TAG = "CronetHelper";
     private static final String NET_LOG_PATH = Environment.getExternalStorageDirectory().getPath() + "/temp/Cronet";
@@ -93,13 +93,16 @@ public class CronetHelper {
         }
     }
 
-    public void downloadCallback(String url) {
-        UrlRequest.Callback downloadCallback = new DownloadRequestCallback();
+    @Deprecated
+    public void downloadCallback(String url, ProgressCallback callback) {
+        UrlRequest.Callback downloadCallback = new DownloadRequestCallback(callback);
         UrlRequest.Builder builder = cronetEngine.newUrlRequestBuilder(url, downloadCallback, executor);
+        builder.disableCache().allowDirectExecutor();
         builder.build().start();
     }
 
-    public void downloadFile(String url, ProgressCallback callback) {
+    @Override
+    public void downloadTest(String url, ProgressCallback callback) {
         if (url == null || url.trim().length() <= 0) {
             return;
         }
@@ -108,8 +111,8 @@ public class CronetHelper {
         try {
             URL httpUrl = new URL(url);
             URLConnection httpConnection = cronetEngine.openConnection(httpUrl);
-            httpConnection.setConnectTimeout(10000);
-            httpConnection.setReadTimeout(10000);
+//            httpConnection.setConnectTimeout(100000);
+//            httpConnection.setReadTimeout(100000);
             httpConnection.setUseCaches(false);
 
             long startTime = SystemClock.elapsedRealtime();
@@ -129,7 +132,7 @@ public class CronetHelper {
                 swapStream.write(buff, 0, rc);
                 currentBytes += rc;
                 double result = (double)currentBytes * 100 / (double)lengthLong;
-                LogUtils.d(TAG, "downloading---" + df.format(result) + "%");
+                //LogUtils.d(TAG, "downloading---" + df.format(result) + "%");
                 if (callback != null) {
                     callback.progress((int)result);
                 }

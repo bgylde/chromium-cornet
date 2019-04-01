@@ -145,7 +145,7 @@ public class MainActivity extends Activity {
             RelativeLayout linearLayout = (RelativeLayout) inflater.inflate(R.layout.progress_view, null);
             ProgressCallback progressCallback = new ProgressCallback(linearLayout, handler, color);
             view.addView(linearLayout);
-            ThreadPoolManager.getInstance().addLogSenderTask(new Runnable() {
+            ThreadPoolManager.getInstance().addCronetTask(new Runnable() {
                 @Override
                 public void run() {
                     cronetHelper.downloadTest(url, progressCallback);
@@ -165,7 +165,7 @@ public class MainActivity extends Activity {
             RelativeLayout linearLayout = (RelativeLayout) inflater.inflate(R.layout.progress_view, null);
             ProgressCallback progressCallback = new ProgressCallback(linearLayout, handler, color);
             view.addView(linearLayout);
-            ThreadPoolManager.getInstance().addLogSenderTask(new Runnable() {
+            ThreadPoolManager.getInstance().addSystemTask(new Runnable() {
                 @Override
                 public void run() {
                     SystemNetHelper.getInstance().downloadTest(url, progressCallback);
@@ -190,7 +190,7 @@ public class MainActivity extends Activity {
             RelativeLayout linearLayout = (RelativeLayout) inflater.inflate(R.layout.progress_view, null);
             ProgressCallback progressCallback = new ProgressCallback(linearLayout, handler, color);
             view.addView(linearLayout);
-            ThreadPoolManager.getInstance().addLogSenderTask(new Runnable() {
+            ThreadPoolManager.getInstance().addOkhttpTask(new Runnable() {
                 @Override
                 public void run() {
                     OkhttpHelper.getHelper().downloadTest(url, progressCallback);

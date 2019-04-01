@@ -2,7 +2,9 @@ package com.sohu.chromium.net.utils.threadPool;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,9 +26,17 @@ public class ThreadPoolManager {
 
     private static final int LOG_RECEIVE_CORE_SIZE = 1;
 
-    private ThreadPool logSenderPool = null;
+    private ThreadPool cronetPool = null;
 
-    private ThreadPool singleThreadPool = null;
+    private ThreadPool okhttpPool = null;
+
+    private ThreadPool systemPool = null;
+
+    private ExecutorService cronetExecutor = null;
+    private ExecutorService okhttpExecutor = null;
+    private ExecutorService systemExecutor = null;
+
+//    private ThreadPool singleThreadPool = null;
 
     private static ThreadPoolManager manager = null;
 
@@ -49,55 +59,104 @@ public class ThreadPoolManager {
     private void initThreadPool() {
         RejectedExecutionHandler waitToAddPolicy = new Wait2AddPolicy();
 
-        if (logSenderPool == null || !logSenderPool.isAlive()) {
+        if (cronetPool == null || !cronetPool.isAlive()) {
             BlockingQueue<Runnable> logSenderQueue = new ArrayBlockingQueue<>(MAX_QUEUE_SIZE);
-            ExecutorService logSenderExecutor = new ThreadPoolExecutor(LOG_SENDER_CORE_SIZE, LOG_SENDER_IDLE_SIZE, FIVE_MINIUTES, TimeUnit.SECONDS, logSenderQueue, new ThreadFactory("MonitorLogSender"), waitToAddPolicy);
-            ((ThreadPoolExecutor)logSenderExecutor).allowCoreThreadTimeOut(true);
-            logSenderPool = new ThreadPool(logSenderExecutor, "LOG_SENDER");
+            cronetExecutor = new ThreadPoolExecutor(LOG_SENDER_CORE_SIZE, LOG_SENDER_IDLE_SIZE, FIVE_MINIUTES, TimeUnit.SECONDS, logSenderQueue, new ThreadFactory("CronetThreadPool"), waitToAddPolicy);
+            ((ThreadPoolExecutor)cronetExecutor).allowCoreThreadTimeOut(true);
+            cronetPool = new ThreadPool(cronetExecutor, "CRONET");
         }
 
-        if (singleThreadPool == null || !singleThreadPool.isAlive()) {
-            BlockingQueue<Runnable> singleSenderQueue = new ArrayBlockingQueue<>(MAX_QUEUE_SIZE);
-            ExecutorService singleExecutor = new ThreadPoolExecutor(LOG_RECEIVE_CORE_SIZE, LOG_RECEIVE_CORE_SIZE, FIVE_MINIUTES, TimeUnit.SECONDS, singleSenderQueue, new ThreadFactory("MonitorSingle"), waitToAddPolicy);
-            ((ThreadPoolExecutor)singleExecutor).allowCoreThreadTimeOut(true);
-            singleThreadPool = new ThreadPool(singleExecutor, "LOG_SENDER_SINGLE");
+        if (systemPool == null || !systemPool.isAlive()) {
+            BlockingQueue<Runnable> logSenderQueue = new ArrayBlockingQueue<>(MAX_QUEUE_SIZE);
+            systemExecutor = new ThreadPoolExecutor(LOG_SENDER_CORE_SIZE, LOG_SENDER_IDLE_SIZE, FIVE_MINIUTES, TimeUnit.SECONDS, logSenderQueue, new ThreadFactory("SystemThreadPool"), waitToAddPolicy);
+            ((ThreadPoolExecutor)systemExecutor).allowCoreThreadTimeOut(true);
+            systemPool = new ThreadPool(systemExecutor, "SYSTEM");
         }
+
+        if (okhttpPool == null || !okhttpPool.isAlive()) {
+            BlockingQueue<Runnable> logSenderQueue = new ArrayBlockingQueue<>(MAX_QUEUE_SIZE);
+            okhttpExecutor = new ThreadPoolExecutor(LOG_SENDER_CORE_SIZE, LOG_SENDER_IDLE_SIZE, FIVE_MINIUTES, TimeUnit.SECONDS, logSenderQueue, new ThreadFactory("OkhttpThreadPool"), waitToAddPolicy);
+            ((ThreadPoolExecutor)okhttpExecutor).allowCoreThreadTimeOut(true);
+            okhttpPool = new ThreadPool(okhttpExecutor, "OKHTTP");
+        }
+
+//        if (singleThreadPool == null || !singleThreadPool.isAlive()) {
+//            BlockingQueue<Runnable> singleSenderQueue = new ArrayBlockingQueue<>(MAX_QUEUE_SIZE);
+//            ExecutorService singleExecutor = new ThreadPoolExecutor(LOG_RECEIVE_CORE_SIZE, LOG_RECEIVE_CORE_SIZE, FIVE_MINIUTES, TimeUnit.SECONDS, singleSenderQueue, new ThreadFactory("MonitorSingle"), waitToAddPolicy);
+//            ((ThreadPoolExecutor)singleExecutor).allowCoreThreadTimeOut(true);
+//            singleThreadPool = new ThreadPool(singleExecutor, "LOG_SENDER_SINGLE");
+//        }
     }
 
-    public void addLogSenderTask(Runnable runnable) {
+    public void addCronetTask(Runnable runnable) {
         if (runnable == null) {
             return;
         }
 
-        if (logSenderPool != null && logSenderPool.isAlive()) {
-            logSenderPool.execute(runnable);
+        if (cronetPool != null && cronetPool.isAlive()) {
+            cronetPool.execute(runnable);
         } else {
             initThreadPool();
-            logSenderPool.execute(runnable);
+            cronetPool.execute(runnable);
         }
     }
 
-    public void addSingleTask(Runnable runnable) {
+    public void addOkhttpTask(Runnable runnable) {
         if (runnable == null) {
             return;
         }
 
-        if (singleThreadPool != null && singleThreadPool.isAlive()) {
-            singleThreadPool.execute(runnable);
+        if (okhttpPool != null && okhttpPool.isAlive()) {
+            okhttpPool.execute(runnable);
         } else {
             initThreadPool();
-            singleThreadPool.execute(runnable);
+            okhttpPool.execute(runnable);
         }
     }
 
-    public static void shutdownSenderThreadPool() {
-        if (manager != null) {
-            if (manager.singleThreadPool != null) {
-                manager.singleThreadPool.shutdown();
-                manager.singleThreadPool = null;
-            }
+    public void addSystemTask(Runnable runnable) {
+        if (runnable == null) {
+            return;
+        }
 
-            manager = null;
+        if (systemPool != null && systemPool.isAlive()) {
+            systemPool.execute(runnable);
+        } else {
+            initThreadPool();
+            systemPool.execute(runnable);
         }
     }
+
+    public Executor getCronetExecutor() {
+        if (cronetPool != null && cronetPool.isAlive()) {
+            return cronetExecutor;
+        } else {
+            initThreadPool();
+            return cronetExecutor;
+        }
+    }
+
+//    public void addSingleTask(Runnable runnable) {
+//        if (runnable == null) {
+//            return;
+//        }
+//
+//        if (singleThreadPool != null && singleThreadPool.isAlive()) {
+//            singleThreadPool.execute(runnable);
+//        } else {
+//            initThreadPool();
+//            singleThreadPool.execute(runnable);
+//        }
+//    }
+
+//    public static void shutdownSenderThreadPool() {
+//        if (manager != null) {
+//            if (manager.singleThreadPool != null) {
+//                manager.singleThreadPool.shutdown();
+//                manager.singleThreadPool = null;
+//            }
+//
+//            manager = null;
+//        }
+//    }
 }

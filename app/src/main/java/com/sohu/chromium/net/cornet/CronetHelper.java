@@ -6,6 +6,7 @@ import android.os.SystemClock;
 
 import com.sohu.chromium.net.utils.Config;
 import com.sohu.chromium.net.utils.LogUtils;
+import com.sohu.chromium.net.utils.threadPool.ThreadPoolManager;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.UploadDataProviders;
@@ -34,7 +35,7 @@ public class CronetHelper implements IDownloadTest{
     private static CronetHelper helper = null;
 
     private CronetHelper() {
-        executor = Executors.newSingleThreadExecutor();
+        executor = ThreadPoolManager.getInstance().getCronetExecutor();
         callback = new UrlRequestCallback();
     }
 
@@ -53,6 +54,7 @@ public class CronetHelper implements IDownloadTest{
     public void init(Context context) {
         CronetEngine.Builder builder = new CronetEngine.Builder(context);
         builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISABLED, 100 * 1024) // cache
+                .addQuicHint("www.bgylde.com", 443, 443)
                 .enableHttp2(true)  // Http/2.0 Supprot
                 .enableQuic(true);   // Quic Supprot
         cronetEngine = builder.build();

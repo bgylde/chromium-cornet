@@ -107,15 +107,16 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 LogUtils.d("MainActivity", "url length: " + urls.length);
+                LogUtils.d("MainActivity", "url: " + urls[0]);
                 switch (requestIndex) {
                     case R.id.urlconnection:
-                        systemTest(testContaioner, urls, false);
+                        systemTest(testContaioner, urls, true);
                         break;
                     case R.id.okhttp:
-                        okhttpTest(testContaioner, urls, false);
+                        okhttpTest(testContaioner, urls, true);
                         break;
                     case R.id.quicUrlConnection:
-                        cronetTest(testContaioner, urls, false);
+                        cronetTest(testContaioner, urls, true);
                         break;
                 }
 

@@ -28,7 +28,6 @@ public class DownloadRequestCallback extends UrlRequest.Callback {
 //    private WritableByteChannel mReceiveChannel = Channels.newChannel(mBytesReceived);
 
     public DownloadRequestCallback(ProgressCallback callback) {
-        startTime = SystemClock.elapsedRealtime();
         this.callback = callback;
     }
 
@@ -41,6 +40,7 @@ public class DownloadRequestCallback extends UrlRequest.Callback {
     @Override
     public void onResponseStarted(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo) throws Exception {
         //LogUtils.d(TAG, "onResponseStarted connect cost time: " + (SystemClock.elapsedRealtime() - startTime));
+        startTime = SystemClock.elapsedRealtime();
         String contentLengthStr = "";
         List<Map.Entry<String, String>> headers = urlResponseInfo.getAllHeadersAsList();
         for (Map.Entry<String, String> header : headers) {

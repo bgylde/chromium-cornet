@@ -96,7 +96,6 @@ public class CronetHelper implements IDownloadTest {
     }
 
     public void downloadCallback(String url, ProgressCallback callback) {
-        LogUtils.d(TAG, "downloadCallback");
         UrlRequest.Callback downloadCallback = new DownloadRequestCallback(callback);
         UrlRequest.Builder builder = cronetEngine.newUrlRequestBuilder(url, downloadCallback, executor);
         builder.disableCache().allowDirectExecutor();
@@ -109,7 +108,6 @@ public class CronetHelper implements IDownloadTest {
             return;
         }
 
-        LogUtils.d(TAG, "downloadTest");
         InputStream inputStream = null;
         try {
             URL httpUrl = new URL(url);

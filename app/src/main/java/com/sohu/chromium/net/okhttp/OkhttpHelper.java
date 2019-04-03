@@ -95,7 +95,6 @@ public class OkhttpHelper implements IDownloadTest {
         Request request = new Request.Builder().cacheControl(CacheControl.FORCE_NETWORK).url(url).build();
 
         Call call = client.newCall(request);
-        long startTime = SystemClock.elapsedRealtime();
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -104,6 +103,7 @@ public class OkhttpHelper implements IDownloadTest {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                long startTime = SystemClock.elapsedRealtime();
                 ResponseBody body = response.body();
                 InputStream inputStream = null;
                 byte[] buf = new byte[102400];

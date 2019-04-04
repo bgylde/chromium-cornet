@@ -94,15 +94,15 @@ public class MainActivity extends AppCompatActivity {
                 switch (prototolIndex) {
                     case R.id.http:
                         //urls = Config.httpTestUrls;
-                        urls = Config.getUrls(false, 80, 300);
+                        urls = Config.getUrls(false, 80, 1);
                         break;
                     case R.id.http2:
                         //urls = Config.http2TestUrls;
-                        urls = Config.getUrls(true, 8080, 300);
+                        urls = Config.getUrls(true, 8080, 1);
                         break;
                     case R.id.quic:
                         //urls = Config.quicTestUrls;
-                        urls = Config.getUrls(true, 443, 300);
+                        urls = Config.getUrls(true, 443, 1);
                         break;
                 }
 

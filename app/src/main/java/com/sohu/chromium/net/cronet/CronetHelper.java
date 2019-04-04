@@ -11,15 +11,21 @@ import com.sohu.chromium.net.callback.ProgressCallback;
 import com.sohu.chromium.net.threadPool.ThreadPoolManager;
 
 import org.chromium.net.CronetEngine;
+import org.chromium.net.HostResolver;
 import org.chromium.net.UploadDataProviders;
 import org.chromium.net.UrlRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
@@ -54,6 +60,24 @@ public class CronetHelper implements IDownloadTest {
     public void init(Context context) {
         CronetEngine.Builder builder = new CronetEngine.Builder(context);
         builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISABLED, 100 * 1024) // cache
+                .setHostResolver(new HostResolver() {
+                    @Override
+                    public List<InetAddress> resolve(String hostname) throws UnknownHostException {
+                        if (hostname == null)
+                            throw new UnknownHostException("hostname == null");
+
+                        LogUtils.d(TAG, "hostname: " + hostname);
+                        if ("www.bgylde.com".equals(hostname)) {
+                            List<InetAddress> result = new ArrayList<>();
+                            byte ip[] = new byte[] { (byte)10, (byte)2, (byte)146, (byte)141};
+                            result.add(InetAddress.getByAddress(hostname, ip));
+                            LogUtils.d(TAG, "result: " + result.get(0));
+                            return result;
+                        }
+
+                        return Arrays.asList(InetAddress.getAllByName(hostname));
+                    }
+                })
                 .addQuicHint("www.bgylde.com", 443, 443)
                 .enableHttp2(true)  // Http/2.0 Supprot
                 .enableQuic(true);   // Quic Supprot

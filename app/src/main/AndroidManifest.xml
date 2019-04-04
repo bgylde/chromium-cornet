@@ -31,9 +31,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".VideoActivity" >
-        </activity>
-
     </application>
 
 </manifest>

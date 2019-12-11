@@ -36,3 +36,16 @@ android {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
 }
+
+apply plugin: 'maven'
+group = 'com.sohu.cronet'
+version = '73.0.3683.75-SNAPSHOT'
+def localRepoUrl = '../repo'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri(localRepoUrl))
+        }
+    }
+}

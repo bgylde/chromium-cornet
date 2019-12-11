@@ -69,7 +69,7 @@ public class CronetHelper implements IDownloadTest {
                         LogUtils.d(TAG, "hostname: " + hostname);
                         if ("www.bgylde.com".equals(hostname)) {
                             List<InetAddress> result = new ArrayList<>();
-                            byte ip[] = new byte[] { (byte)10, (byte)2, (byte)146, (byte)141};
+                            byte ip[] = new byte[] { (byte)10, (byte)2, (byte)146, (byte)151};
                             result.add(InetAddress.getByAddress(hostname, ip));
                             LogUtils.d(TAG, "result: " + result.get(0));
                             return result;

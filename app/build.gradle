@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
+    buildToolsVersion '27.0.3'
+
     defaultConfig {
         applicationId "com.sohu.chromium.net"
         minSdkVersion 14
@@ -18,12 +20,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ["src/main/jniLibs"]
         }
     }
 

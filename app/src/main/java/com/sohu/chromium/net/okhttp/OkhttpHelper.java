@@ -91,7 +91,7 @@ public class OkhttpHelper implements IDownloadTest {
         }
     }
 
-    public void downloadTestAsyn(String url, ProgressCallback callback) {
+    public void downloadTestAsyn(String url, final ProgressCallback callback) {
         Request request = new Request.Builder().cacheControl(CacheControl.FORCE_NETWORK).url(url).build();
 
         Call call = client.newCall(request);

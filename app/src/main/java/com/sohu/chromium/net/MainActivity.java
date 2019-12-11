@@ -94,15 +94,15 @@ public class MainActivity extends AppCompatActivity {
                 switch (prototolIndex) {
                     case R.id.http:
                         //urls = Config.httpTestUrls;
-                        urls = Config.getUrls(false, 80, 1);
+                        urls = Config.getUrls(false, 80, 100);
                         break;
                     case R.id.http2:
                         //urls = Config.http2TestUrls;
-                        urls = Config.getUrls(true, 8080, 1);
+                        urls = Config.getUrls(true, 8080, 100);
                         break;
                     case R.id.quic:
                         //urls = Config.quicTestUrls;
-                        urls = Config.getUrls(true, 443, 1);
+                        urls = Config.getUrls(true, 443, 100);
                         break;
                 }
 
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             if (!useThreadPool) {
                 cronetHelper.downloadCallback(urls[i], progressCallback);
             } else {
-                int finalI = i;
+                final int finalI = i;
                 ThreadPoolManager.getInstance().addCronetTask(new Runnable() {
                     @Override
                     public void run() {
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             RelativeLayout linearLayout = (RelativeLayout) inflater.inflate(R.layout.progress_view, null);
             final ProgressCallback progressCallback = new ProgressCallback(linearLayout, handler, color, i);
             view.addView(linearLayout);
-            int finalI = i;
+            final int finalI = i;
             ThreadPoolManager.getInstance().addSystemTask(new Runnable() {
                 @Override
                 public void run() {
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
             if (!useThreadPool) {
                 OkhttpHelper.getHelper().downloadTestAsyn(urls[i], progressCallback);
             } else {
-                int finalI = i;
+                final int finalI = i;
                 ThreadPoolManager.getInstance().addOkhttpTask(new Runnable() {
                     @Override
                     public void run() {

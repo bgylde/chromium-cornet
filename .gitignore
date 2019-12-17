@@ -57,3 +57,6 @@ local.properties
 rocoofix/
 Users/
 *.local_bak
+ffmpeg
+repo
+upload.sh

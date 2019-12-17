@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 28
@@ -10,7 +11,7 @@ android {
         versionName "1.0"
 
         ndk {
-            abiFilters("armeabi")
+            abiFilters("armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64")
         }
     }
 
@@ -37,15 +38,11 @@ dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-apply plugin: 'maven'
-group = 'com.sohu.cronet'
-version = '73.0.3683.75-SNAPSHOT'
-def localRepoUrl = '../repo'
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: uri(localRepoUrl))
-        }
-    }
+publish {
+    userOrg = 'bgylde'
+    groupId = 'cn.bgylde.cronet'
+    artifactId = 'cronet-stable'
+    publishVersion = '79.0.3945.79'
+    desc = 'chromium cronet net lib'
+    website = 'https://github.com/bgylde/chromium-cornet'
 }

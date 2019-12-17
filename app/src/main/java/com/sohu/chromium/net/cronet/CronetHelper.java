@@ -11,21 +11,20 @@ import com.sohu.chromium.net.callback.ProgressCallback;
 import com.sohu.chromium.net.threadPool.ThreadPoolManager;
 
 import org.chromium.net.CronetEngine;
-import org.chromium.net.HostResolver;
+import org.chromium.net.ExperimentalCronetEngine;
+import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UploadDataProviders;
 import org.chromium.net.UrlRequest;
+import org.chromium.net.UrlResponseInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
@@ -34,7 +33,7 @@ import java.util.concurrent.Executor;
 public class CronetHelper implements IDownloadTest {
     private static final String TAG = "CronetHelper";
     private static final String NET_LOG_PATH = Environment.getExternalStorageDirectory().getPath() + "/temp/Cronet";
-    private CronetEngine cronetEngine;
+    private ExperimentalCronetEngine cronetEngine;
     private Executor executor;      //这个线程池作为回调使用，如果支持多个线程的话，会导致大量的回调到界面，导致界面卡死，暂时使用单线程池
     private UrlRequest.Callback callback;
 
@@ -58,30 +57,18 @@ public class CronetHelper implements IDownloadTest {
     }
 
     public void init(Context context) {
-        CronetEngine.Builder builder = new CronetEngine.Builder(context);
+        ExperimentalCronetEngine.Builder builder = new ExperimentalCronetEngine.Builder(context);
         builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISABLED, 100 * 1024) // cache
-                .setHostResolver(new HostResolver() {
-                    @Override
-                    public List<InetAddress> resolve(String hostname) throws UnknownHostException {
-                        if (hostname == null)
-                            throw new UnknownHostException("hostname == null");
-
-                        LogUtils.d(TAG, "hostname: " + hostname);
-                        if ("www.bgylde.com".equals(hostname)) {
-                            List<InetAddress> result = new ArrayList<>();
-                            byte ip[] = new byte[] { (byte)10, (byte)2, (byte)146, (byte)151};
-                            result.add(InetAddress.getByAddress(hostname, ip));
-                            LogUtils.d(TAG, "result: " + result.get(0));
-                            return result;
-                        }
-
-                        return Arrays.asList(InetAddress.getAllByName(hostname));
-                    }
-                })
                 .addQuicHint("www.bgylde.com", 443, 443)
                 .enableHttp2(true)  // Http/2.0 Supprot
                 .enableQuic(true);   // Quic Supprot
         cronetEngine = builder.build();
+        cronetEngine.addRequestFinishedListener(new RequestFinishedInfo.Listener(executor) {
+            @Override
+            public void onRequestFinished(RequestFinishedInfo requestFinishedInfo) {
+                onRequestFinishedHandle(requestFinishedInfo);
+            }
+        });
         LogUtils.d(TAG, NET_LOG_PATH);
 //        cronetEngine.startNetLogToFile(NET_LOG_PATH, false);
         LogUtils.d(TAG, "version: " + cronetEngine.getVersionString());
@@ -177,5 +164,58 @@ public class CronetHelper implements IDownloadTest {
         } catch (IOException e) {
             LogUtils.e(TAG, e);
         }
+    }
+
+    /**
+     * Print the request info.
+     * @param requestInfo requestInfo
+     */
+    private static void onRequestFinishedHandle(final RequestFinishedInfo requestInfo) {
+        if (!LogUtils.isDebug()) {
+            return;
+        }
+
+        LogUtils.d(TAG, "############# url: " + requestInfo.getUrl() + " #############");
+        LogUtils.d(TAG, "onRequestFinished: " + requestInfo.getFinishedReason());
+        RequestFinishedInfo.Metrics metrics = requestInfo.getMetrics();
+        if (metrics != null) {
+            LogUtils.d(TAG, "RequestStart: "   + (metrics.getRequestStart()    == null ? -1 : metrics.getRequestStart().getTime()));
+            LogUtils.d(TAG, "DnsStart: "       + (metrics.getDnsStart()        == null ? -1 : metrics.getDnsStart().getTime()));
+            LogUtils.d(TAG, "DnsEnd: "         + (metrics.getDnsEnd()          == null ? -1 : metrics.getDnsEnd().getTime()));
+            LogUtils.d(TAG, "ConnectStart: "   + (metrics.getConnectStart()    == null ? -1 : metrics.getConnectStart().getTime()));
+            LogUtils.d(TAG, "ConnectEnd: "     + (metrics.getConnectEnd()      == null ? -1 : metrics.getConnectEnd().getTime()));
+            LogUtils.d(TAG, "SslStart: "       + (metrics.getSslStart()        == null ? -1 : metrics.getSslStart().getTime()));
+            LogUtils.d(TAG, "SslEnd: "         + (metrics.getSslEnd()          == null ? -1 : metrics.getSslEnd().getTime()));
+            LogUtils.d(TAG, "SendingStart: "   + (metrics.getSendingStart()    == null ? -1 : metrics.getSendingStart().getTime()));
+            LogUtils.d(TAG, "SendingEnd: "     + (metrics.getSendingEnd()      == null ? -1 : metrics.getSendingEnd().getTime()));
+            LogUtils.d(TAG, "PushStart: "      + (metrics.getPushStart()       == null ? -1 : metrics.getPushStart().getTime()));
+            LogUtils.d(TAG, "PushEnd: "        + (metrics.getPushEnd()         == null ? -1 : metrics.getPushEnd().getTime()));
+            LogUtils.d(TAG, "ResponseStart: "  + (metrics.getResponseStart()   == null ? -1 : metrics.getResponseStart().getTime()));
+            LogUtils.d(TAG, "RequestEnd: "     + (metrics.getRequestEnd()      == null ? -1 : metrics.getRequestEnd().getTime()));
+            LogUtils.d(TAG, "TotalTimeMs: "    + metrics.getTotalTimeMs());
+            LogUtils.d(TAG, "RecvByteCount: "  + metrics.getReceivedByteCount());
+            LogUtils.d(TAG, "SentByteCount: "  + metrics.getSentByteCount());
+            LogUtils.d(TAG, "SocketReused: "   + metrics.getSocketReused());
+            LogUtils.d(TAG, "TtfbMs: "         + metrics.getTtfbMs());
+        }
+
+        Exception exception = requestInfo.getException();
+        if (exception != null) {
+            LogUtils.e(TAG, exception);
+        }
+
+        UrlResponseInfo urlResponseInfo = requestInfo.getResponseInfo();
+        if (urlResponseInfo != null) {
+            LogUtils.d(TAG, "Cache: " + urlResponseInfo.wasCached());
+            LogUtils.d(TAG, "Protocol: " + urlResponseInfo.getNegotiatedProtocol());
+            LogUtils.d(TAG, "HttpCode: " + urlResponseInfo.getHttpStatusCode());
+            LogUtils.d(TAG, "ProxyServer: " + urlResponseInfo.getProxyServer());
+            List<Map.Entry<String, String>> headers = urlResponseInfo.getAllHeadersAsList();
+            for (Map.Entry<String, String> entry : headers) {
+                LogUtils.d(TAG, "=== " + entry.getKey() + " : " + entry.getValue() + " ===");
+            }
+        }
+
+        LogUtils.d(TAG , "############# END #############");
     }
 }

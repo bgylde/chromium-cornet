@@ -1,1 +1,1 @@
-include ':app', ':cronet-lib'
+include ':app', ':cronet-stable'

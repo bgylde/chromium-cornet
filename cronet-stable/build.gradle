@@ -24,7 +24,7 @@ android {
 
     sourceSets {
         main {
-            jniLibs.srcDirs = ["src/main/jniLibs"]
+            jniLibs.srcDirs = ["libs"]
         }
     }
 
@@ -40,9 +40,30 @@ dependencies {
 
 publish {
     userOrg = 'bgylde'
-    groupId = 'cn.bgylde.cronet'
+    groupId = 'org.chromium.net'
     artifactId = 'cronet-stable'
     publishVersion = '79.0.3945.79'
     desc = 'chromium cronet net lib'
     website = 'https://github.com/bgylde/chromium-cornet'
 }
+
+//apply plugin: 'maven'
+//group = 'cn.bgylde.cronet'
+//def localRepoUrl = '/Users/wangyan/code/sohuMaven'
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            repository(url: 'http://10.18.31.123:8081/nexus/content/repositories/releases/') {
+//                authentication(userName: 'admin', password: 'sohu123456')
+//            }
+//
+//            pom.project {
+//                version '79.0.3945.79'
+//                artifactId 'cronet-stable'
+//                groupId 'cn.bgylde.cronet'
+//                packaging 'aar'
+//                description 'chromium cronet lib aar'
+//            }
+//        }
+//    }
+//}
